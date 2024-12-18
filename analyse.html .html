@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Analyse de données</title>
+</head>
+<body>
+    <header>
+        <h1>Analyse de données</h1>
+    </header>
+    <main>
+        <p>Cette page présente les résultats de nos analyses de données.</p>
+
+        <!-- Analyse de données -->
+        <h2>Nuage de mots des compétences les plus demandées pondérées par le nombre de brevets</h2>
+        <pre><code>
+competence_data <- base_emp %>%
+  left_join(base_brevets %>% select(firm_name, n_patents), by = "firm_name") %>%
+  filter(!is.na(top_skill_req)) %>%
+  unnest_tokens(word, top_skill_req) %>%
+  group_by(word) %>%
+  summarise(
+    total_offers = sum(n_offres, na.rm = TRUE),
+    total_patents = sum(n_patents, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_offers)) %>%
+  filter(word != "na")
+set.seed(123)
+wordcloud(
+  words = competence_data$word,
+  freq = competence_data$total_patents,
+  min.freq = 2,
+  scale = c(3, 0.5),
+  colors = brewer.pal(8, "Dark2")
+)
+        </code></pre>
+        <p>Le nuage de mots met en évidence un besoin important pour différentes compétences. Des compétences 
+        techniques liées à la data science et à l'informatique telles que Python, Git, Excel. Des compétences 
+        interpersonnelles et linguistiques telles que le travail en équipe ("équipe"), la communication, 
+        l'anglais. Ainsi que des cimpétences comportementales comme l'autonomie et l'adaptabilité. Cela 
+        traduit probablement une forte demande pour des professionnels polyvalents, capables de travailler 
+        en équipe tout en possédant des compétences analytiques et techniques.</p>
+
+        <!-- Top 10 des compétences associées -->
+        <h2>Top 10 des compétences associées à l'innovation</h2>
+        <pre><code>
+skill_summary <- competence_data %>%
+  filter(!is.na(word)) %>%
+  separate_rows(word, sep = ",\\s*") %>%
+  group_by(word) %>%
+  summarise(
+    total_patents = sum(total_patents, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_patents)) %>%
+  slice_head(n = 10)
+ggplot(skill_summary, aes(x = reorder(word, total_patents), y = total_patents)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "Top 10 des compétences associées à l'innovation",
+    x = "Compétence demandée",
+    y = "Nombre total de brevets"
+  )
+        </code></pre>
+        <p>On remarque que les compétences "équipe", "communication", "git", "excel", 
+        "anglais", "python" apparaissent dans les deux graphiques (le précédent et 
+        ce dernier). Cela nous confirme que ces compétences sont non seulement fréquemment 
+        demandées mais aussi fortement liées à l'innovation. L'importance de "git", "excel", et 
+        "tableau" montre que les compétences techniques associées à la gestion de versions, l'analyse de 
+        données, et la visualisation jouent un rôle crucial. La communication et le travail en 
+        équipe dominent dans les deux graphiques, soulignant un équilibre entre compétences techniques et 
+        interpersonnelles.</p>
+        <!-- Top 10 des codes IPC -->
+        <h2>Top 10 codes IPC par nombre de brevets</h2>
+        <pre><code>
+top_10_brevets <- base_emp_inno %>%
+  filter(!is.na(firm_name)) %>%
+  arrange(desc(n_patents)) %>%
+  slice_head(n = 20) %>%
+  group_by(ipc_main_code) %>%
+  summarise(total_patents = sum(n_patents, na.rm = TRUE)) %>%
+  ungroup()
+ggplot(top_10_brevets, aes(x = reorder(ipc_main_code, total_patents), y = total_patents)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "Top 10 codes IPC par nombre de brevets",
+    x = "Codes IPC",
+    y = "Total de brevets"
+  )
+        </code></pre>
+        <p>Ce graphique nous montre dans l'ordre décroissant que les principaux domaines techniques 
+        de l’innovation sont :
+        - La pharmacie et la santé (A61K).
+        - Les semi-conducteurs et les télécommunications (H01L, H04W).
+        - L’automobile et les technologies embarquées (B60C, B60W).
+        - Les capteurs et la mesure (G01S).
+        Cette analyse ouvre les portes à l'analyse de la répartition sectorielle des brevets.</p>
+        
+        <!-- Nombre de brevets par secteur -->
+        <h2>Nombre de brevets par secteur</h2>
+        <pre><code>
+sector_analysis <- base_emp_inno %>%
+  group_by(sector_main) %>%
+  summarise(
+    total_patents = sum(n_patents, na.rm = TRUE),
+    total_offers = sum(n_offres, na.rm = TRUE)
+  ) %>%
+  filter(!is.na(sector_main) & sector_main != "" & total_patents > 0)
+ggplot(sector_analysis, aes(x = reorder(sector_main, total_patents), y = total_patents)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "Nombre de brevets par secteur",
+    x = "Secteur",
+    y = "Nombre de brevets"
+  )
+        </code></pre>
+        <p>On remarque que l'industrie pharmaceutique, biotechnologie, chimie est à la première 
+        place de nouveau. Cela nous confirme que ce secteur domine très largement avec près de 3 000 brevets.
+        Cette prédominance peut s'expliquer par l'importance de la recherche et du développement 
+        dans la santé, la chimie, et les biotechnologies, où l'innovation est cruciale pour produire de nouveaux 
+        médicaments, traitements ou matériaux.
+        L'industrie high-tech arrive en deuxième position. De manière cohérente avec notre graphique 
+        précédent cela nous confirme l'importance des technologies de pointe et des télécommunications dans le paysage actuel 
+        de l'innovation. Les secteurs tels que le BTP, la Banque, l'assurance, la finance, ou encore le secteur informatique, ESN montrent 
+        une contribution très marginale en termes de brevets. Cela peut indiquer que dans ces secteurs, l'innovation se traduit moins par des 
+        brevets mais plutôt par d'autres formes d'innovation comme des solutions logicielles, des méthodologies ou des services<p>
+          
+        <!-- Densité des brevets par département -->
+        <h2>Densité des brevets par département en France</h2>
+        <pre><code>
+data_cleaned <- base_emp_inno %>%
+  select(addr_dept_main.x, n_patents) %>%
+  filter(!is.na(addr_dept_main.x), !is.na(n_patents)) %>%
+  group_by(addr_dept_main.x) %>%
+  summarise(total_patents = sum(n_patents, na.rm = TRUE))
+france_departments <- st_read("https://github.com/gregoiredavid/france-geojson/raw/master/departements-version-simplifiee.geojson")
+france_map <- france_departments %>%
+  left_join(data_cleaned, by = c("code" = "addr_dept_main.x"))
+ggplot(data = france_map) +
+  geom_sf(aes(fill = total_patents), color = "white") +
+  scale_fill_gradient(low = "yellow", high = "darkred", na.value = "grey90") +
+  theme_minimal() +
+  labs(title = "Densité des brevets par département en France")
+        </code></pre>
+        <p>Sur ce graphique, les départements les plus foncés (marron) indiquent une forte 
+        production de brevets, avec des valeurs supérieures à 5000 brevets. Parmi eux, on distingue :
+        la Gironde et l'Île de France et la région PACA. Il y a une forte innovation en Gironde 
+        souvent liée aux secteurs industriels et technologiques.
+        L'Île-de-France est traditionnellement une forte zone d'innovation et d'activité 
+        économique en France.
+        Les départements en Provence-Alpes-Côte d’Azur montrent également une dynamique importante.
+        La grande majorité des départements, représentés en gris clair, affichent un nombre 
+        de brevets très faible ou nul selon nos données, et ce en particulier dans les zones
+        rurales et périphériques.
+        Il existe différent facteurs explicatifs:
+        - Les régions innovantes comme l'Île-de-France et la Gironde bénéficient d’une forte
+        présence d’entreprises technologiques, pharmaceutiques et industrielles. Ces départements 
+        abritent souvent des centres de R&D, des laboratoires et des grandes entreprises internationales.
+        - La proximité des universités et des instituts de recherche favorise la production de 
+        brevets, ce qui peut expliquer les départements dynamiques dans des régions comme la région 
+        PACA ou Rhône-Alpes.<p>
+
+        <!-- Conclusion générale -->
+        <h2>Conclusion générale</h2>
+        <p>L’analyse montre une domination des secteurs pharmaceutiques et technologiques 
+        dans l’innovation, une concentration géographique marquée dans quelques régions 
+        françaises, et une forte demande en compétences techniques et comportementales. 
+        Ces résultats soulignent que l'innovation repose sur des pôles stratégiques où les 
+        compétences humaines et technologiques se conjuguent pour produire des avancées majeures.</p>
+
+        <a href="index.html">Retour à l'accueil</a>
+    </main>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Statistiques descriptives</title>
+</head>
+<body>
+    <header>
+        <h1>Statistiques descriptives</h1>
+    </header>
+    <main>
+        <p>Cette page contient les statistiques descriptives sur nos données.</p>
+
+        <!-- Variables numériques -->
+        <h2>Variables numériques</h2>
+        <pre><code>
+stats_n_patents <- base_brevets %>%
+  summarise(
+    variable = "n_patents",
+    min = min(n_patents, na.rm = TRUE),
+    median = median(n_patents, na.rm = TRUE),
+    max = max(n_patents, na.rm = TRUE),
+    mean = mean(n_patents, na.rm = TRUE),
+    sd = sd(n_patents, na.rm = TRUE),
+    missing = sum(is.na(n_patents))
+  )
+print(stats_n_patents)
+
+stats_base_emp_inno <- bind_rows(
+  base_emp_inno %>%
+    summarise(
+      variable = "n_patents",
+      min = min(n_patents, na.rm = TRUE),
+      median = median(n_patents, na.rm = TRUE),
+      max = max(n_patents, na.rm = TRUE),
+      mean = mean(n_patents, na.rm = TRUE),
+      sd = sd(n_patents, na.rm = TRUE),
+      missing = sum(is.na(n_patents))
+    ),
+  base_emp_inno %>%
+    summarise(
+      variable = "n_offres",
+      min = min(n_offres, na.rm = TRUE),
+      median = median(n_offres, na.rm = TRUE),
+      max = max(n_offres, na.rm = TRUE),
+      mean = mean(n_offres, na.rm = TRUE),
+      sd = sd(n_offres, na.rm = TRUE),
+      missing = sum(is.na(n_offres))
+    ),
+  base_emp_inno %>%
+    summarise(
+      variable = "avg_wage",
+      min = min(avg_wage, na.rm = TRUE),
+      median = median(avg_wage, na.rm = TRUE),
+      max = max(avg_wage, na.rm = TRUE),
+      mean = mean(avg_wage, na.rm = TRUE),
+      sd = sd(avg_wage, na.rm = TRUE),
+      missing = sum(is.na(avg_wage))
+    )
+)
+print(stats_base_emp_inno)
+        </code></pre>
+
+        <!-- Variables à caractères -->
+        <h2>Variables à caractères</h2>
+
+        <h3>Base brevets</h3>
+        <pre><code>
+top_5_brevets <- base_brevets %>%
+  filter(!is.na(firm_name)) %>% 
+  arrange(desc(n_patents)) %>% 
+  slice_head(n = 5) %>% 
+  select(firm_name, n_patents, ipc_main_desc)
+print(top_5_brevets)
+
+top_5_addr <- base_brevets %>%
+  filter(!is.na(firm_name)) %>%
+  group_by(addr_city_main) %>%
+  summarise(total_patents = sum(n_patents, na.rm = TRUE)) %>%
+  arrange(desc(total_patents)) %>% 
+  slice_head(n = 5)
+print(top_5_addr)
+
+top_5_dept <- base_brevets %>%
+  filter(!is.na(firm_name)) %>%
+  group_by(addr_dept_main) %>%
+  summarise(total_patents = sum(n_patents, na.rm = TRUE)) %>%
+  arrange(desc(total_patents)) %>%
+  slice_head(n = 5)
+print(top_5_dept)
+        </code></pre>
+
+        <h3>Base emplois</h3>
+        <pre><code>
+top_5_salary <- base_emp %>%
+  filter(!is.na(firm_name)) %>%
+  arrange(desc(avg_wage)) %>%
+  slice_head(n = 5) %>%
+  select(firm_name, avg_wage, addr_dept_main)
+print(top_5_salary)
+
+top_5_sector <- base_emp %>%
+  filter(!is.na(firm_name) & sector_main != "") %>%
+  arrange(desc(avg_wage)) %>%
+  slice_head(n = 5) %>%
+  select(firm_name, sector_main, avg_wage)
+print(top_5_sector)
+        </code></pre>
+
+        <a href="index.html">Retour à l'accueil</a>
+    </main>
+</body>
+</html>
