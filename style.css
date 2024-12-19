@@ -1,0 +1,29 @@
+/* Bouton Statistiques descriptives */
+.btn-x {
+    background-color: white; /* Fond blanc */
+    color: #8B4513; /* Marron pour le texte */
+    border: 2px solid #8B4513; /* Contour marron */
+    border-radius: 8px; /* Coins arrondis */
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Animation douce */
+}
+
+.btn-x:hover {
+    background-color: #8B4513; /* Marron au survol */
+    color: white; /* Texte blanc au survol */
+}
+
+/* Bouton Analyse de données */
+.btn-y {
+    background-color: white; /* Fond blanc */
+    color: #A0522D; /* Marron plus clair pour le texte */
+    border: 2px solid #A0522D; /* Contour marron clair */
+    border-radius: 8px; /* Coins arrondis */
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Animation douce */
+}
+
+.btn-y:hover {
+    background-color: #A0522D; /* Marron clair au survol */
+    color: white; /* Texte blanc au survol */
+}

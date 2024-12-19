@@ -3,26 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Accueil</title>
+    <title>Accueil - Projet remédiation R 2024</title>
+    <!-- Lien vers Bootstrap pour le design moderne -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .banner {
+            background-color: #efb3dd;
+            color: white;
+            padding: 50px 0;
+            text-align: center;
+        }
+        .nav-link {
+            color: white ;
+        }
+        .section {
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        footer {
+            background-color: #b5acbe;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .btn-stats {
+          background-color: #bc87c9; 
+          color: white;
+          border: none;
+          border-radius: 8px;
+        }
+
+      .btn-stats:hover {
+        background-color: #cb8bab; 
+      }
+
+      .btn-analyse {
+        background-color: #bc87c9; 
+        color: white;
+        border: none;
+        border-radius: 8px;
+      }
+
+      .btn-analyse:hover {
+        background-color: #cb8bab;
+      }
+
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Bienvenue sur notre site !</h1>
-    </header>
-    <main>
-        <p>Ce site présente des statistiques descriptives et des analyses de données réalisées par notre équipe.</p>
-        <h2>Équipe</h2>
-        <ul>
-            <li>Siham</li>
-            <li>Tom</li>
-        </ul>
-        <nav>
-            <ul>
-                <li><a href="stats.html">Statistiques descriptives</a></li>
-                <li><a href="analyse.html">Analyse de données</a></li>
+    <!-- En-tête -->
+    <div class="banner">
+        <h1>Bienvenue sur notre site répertoriant nos résultats</h1>
+        <p>Par Siham, Tom, Marco et Nathan</p>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="stats.html">Statistiques descriptives</a></li>
+                <li class="nav-item"><a class="nav-link" href="analyse.html">Analyse de données</a></li>
             </ul>
         </nav>
-    </main>
+    </div>
+
+    <!-- Corps de la page -->
+    <div class="container">
+        <div class="section">
+            <h2>L'INNOVATION ET L'EMPLOI</h2>
+            <p>Ce site présente nos résultats pour notre projet R 2024. Vous y trouverez des statistiques descriptives
+                ainsi que des analyses détaillées. Cliquez sur les liens ci-dessous pour explorer notre travail :
+            </p>
+            <div class="text-center">
+              <a href="stats.html" class="btn btn-stats btn-lg">Statistiques descriptives</a>
+              <a href="analyse.html" class="btn btn-analyse btn-lg">Analyse de données</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer>
+
+      <div class="text-center" style="margin-top: 20px;">
+        <a href="index.html" style="color: white; text-decoration: none; font-weight: bold;">
+          Revenir à l'accueil
+        </a>
+      </div>
+
+        <p>&copy; 2024 Tom GALMICHE, Marco DOUET, Nathan MAISONNAVE, Siham HAMMOUCH - Projet remédiation R 2024</p>
+    </footer>
 </body>
 </html>
